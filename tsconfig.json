@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "target": "es5",
+    "sourceMap": true,
+    "lib": ["es2017", "dom"],
+    "typeRoots": ["node_modules/@types", "types/"]
+  },
+  "include": ["src/*"]
+}
