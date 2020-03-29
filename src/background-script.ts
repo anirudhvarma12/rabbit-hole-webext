@@ -1,5 +1,6 @@
-import { Link, Store } from "./models";
+import { Link, Store, DEFAULT_STORE } from "./models";
 import { createSession, findLatestLink, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
+import { Message, MessageType } from "./messages";
 
 //TODO Remove params and fragments
 
@@ -21,9 +22,13 @@ export const SESSION_LIST = "sessions";
 
 const tabSessionId: Record<number, number> = {};
 const sourceUrls: Record<number, string> = {};
+const transitionTypes: Record<number, string> = {};
 
 export const getStore = async (): Promise<Store> => {
   const store = await browser.storage.local.get();
+  if (store == null || store == undefined) {
+    return DEFAULT_STORE;
+  }
   return store as Store;
 };
 
@@ -36,8 +41,12 @@ async function onDomLoaded(details: NavigationDetail) {
   const pages = store.pages || [];
   const existinSessionForTab = tabSessionId[details.tabId];
   let session;
-  if (!existinSessionForTab || (details.transitionType != "reload" && details.transitionType != "link")) {
+  if (
+    !existinSessionForTab ||
+    (transitionTypes[details.tabId] != "reload" && transitionTypes[details.tabId] != "link")
+  ) {
     session = createSession();
+    session.name = currentTitle;
     sessions.push(session);
     tabSessionId[details.tabId] = session.id;
   } else {
@@ -60,7 +69,10 @@ async function onDomLoaded(details: NavigationDetail) {
 }
 
 const filter: browser.webNavigation.EventUrlFilters = { url: [{ hostContains: ".wikipedia" }] };
-browser.webNavigation.onCommitted.addListener(onDomLoaded, filter);
+browser.webNavigation.onCommitted.addListener(details => {
+  transitionTypes[details.tabId] = details.transitionType;
+}, filter);
+browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded, filter);
 browser.webNavigation.onCreatedNavigationTarget.addListener(async details => {
   // If the user opens in a new tab, sourceTabId maintains the session.
   if (details.sourceTabId != -1) {
@@ -77,6 +89,30 @@ browser.webNavigation.onBeforeNavigate.addListener(async details => {
     sourceUrls[details.tabId] = currentTab[0]?.url;
   }
 }, filter);
-browser.storage.onChanged.addListener((changes, areaName) => {
-  console.log(changes?.links?.newValue);
+browser.browserAction.onClicked.addListener(() => {
+  const data = {
+    url: "viewer.html"
+  };
+  browser.tabs.create(data);
+});
+
+//Event Listeners for extension page
+browser.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
+  if (message.type == MessageType.GET_SESSIONS) {
+    getStore().then(store => {
+      sendResponse(store.sessions);
+    });
+    return true;
+  } else if (message.type == MessageType.GET_LINKS_AND_PAGES) {
+    const sessionid = message.payload;
+    getStore().then(store => {
+      const links = getLinksForSession(store.links, sessionid);
+      const pages = store.pages.filter(page => {
+        const linkIndex = links.findIndex(l => l.source_url == page.url || l.target_url == page.url);
+        return linkIndex != -1;
+      });
+      sendResponse({ links, pages });
+    });
+    return true;
+  }
 });

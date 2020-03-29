@@ -6,5 +6,8 @@
   "background": {
     "scripts": ["js/background.js"]
   },
-  "permissions": ["storage", "webNavigation", "tabs"]
+  "permissions": ["storage", "webNavigation", "tabs"],
+  "browser_action": {
+    "default_title": "Rabbit Hole"
+  }
 }
