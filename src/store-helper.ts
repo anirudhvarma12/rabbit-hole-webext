@@ -1,4 +1,4 @@
-import { Link, Session } from "./models";
+import { Link, Session, Id, Page } from "./models";
 
 /**
  * Finds the latest Link where the given URL is the target and returns the session for that.
@@ -35,4 +35,28 @@ export const findOrCreateSessionForPage = (
     return { session, added: false };
   }
   return { session: createSession(), added: true };
+};
+
+export const getLinksForSession = (links: Link[], session: Id) => {
+  return links.filter(link => link.session == session);
+};
+
+export const findLatestLink = (links: Link[]) => {
+  if (links.length == 0) {
+    return;
+  }
+  return links[links.length - 1];
+};
+
+export const findOrCreatePage = (url: string, title: string, pages: Page[]): { page: Page; added: boolean } => {
+  const page = pages.find(p => p.url == url);
+  if (page) {
+    return { page, added: false };
+  }
+  const newPage: Page = { url, title };
+  return { page: newPage, added: true };
+};
+
+export const findSessionById = (sessions: Session[], id: Id) => {
+  return sessions.find(s => s.id === id);
 };

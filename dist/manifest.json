@@ -6,5 +6,5 @@
   "background": {
     "scripts": ["js/background.js"]
   },
-  "permissions": ["storage", "webNavigation"]
+  "permissions": ["storage", "webNavigation", "tabs"]
 }
