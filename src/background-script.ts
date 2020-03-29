@@ -1,4 +1,4 @@
-import { Link, Store, DEFAULT_STORE } from "./models";
+import { Link, Store, DEFAULT_STORE, ExpandedLink } from "./models";
 import { createSession, findLatestLink, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
 import { Message, MessageType } from "./messages";
 

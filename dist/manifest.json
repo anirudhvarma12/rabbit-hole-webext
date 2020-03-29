@@ -9,5 +9,6 @@
   "permissions": ["storage", "webNavigation", "tabs"],
   "browser_action": {
     "default_title": "Rabbit Hole"
-  }
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com; object-src 'self'"
 }

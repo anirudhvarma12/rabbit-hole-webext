@@ -2,6 +2,11 @@
 <html lang="en">
 
 <head>
+    <style>
+        html {
+            height: 100%;
+        }
+    </style>
     <meta charset="UTF-8">
     <title>Rabbit Hole</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -9,15 +14,22 @@
     <link rel="stylesheet" href="./viewer.css" />
 </head>
 
-<body class="p-4">
-    <div class="d-flex justify-content-between">
-        <h1>Rabbit Hole</h1>
-        <div class="d-flex align-items-center">
-            <select name="session_select" id="session_select" placeholder="Select Session"
-                class="form-control mr-2"></select>
-            <button class="btn btn-primary" id="submit_btn">Explore!</button>
+<body class="p-4 h-100">
+    <div class="d-flex flex-column h-100">
+        <div class="d-flex justify-content-between">
+            <h1>Rabbit Hole</h1>
+            <div class="d-flex align-items-center">
+                <select name="session_select" id="session_select" placeholder="Select Session"
+                    class="form-control mr-2"></select>
+                <button class="btn btn-primary" id="submit_btn">Explore!</button>
+            </div>
+        </div>
+        <div id="explorer" style="width: 100%; height: 80%;">
+
         </div>
     </div>
+
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="/js/viewer.js"></script>
 </body>
 

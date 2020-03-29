@@ -36,3 +36,8 @@ export const DEFAULT_STORE: Store = {
   sessions: [],
   links: []
 };
+
+export interface ExpandedLink extends Link {
+  target_title: string;
+  source_title?: string;
+}

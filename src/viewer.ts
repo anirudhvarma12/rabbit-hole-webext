@@ -1,6 +1,6 @@
-import { Session, Store } from "./models";
 import { Message, MessageType } from "./messages";
-
+import { Session, Store } from "./models";
+declare let vis: any;
 const setup = () => {
   const message: Message = {
     type: MessageType.GET_SESSIONS
@@ -29,8 +29,38 @@ export const handleSubmit = () => {
       type: MessageType.GET_LINKS_AND_PAGES,
       payload: selectedValue
     };
-    browser.runtime.sendMessage(message).then(state => {
-      console.log(state);
+    browser.runtime.sendMessage(message).then((state: Pick<Store, "pages" | "links">) => {
+      const nodes = new vis.DataSet(
+        state.pages.map((p, index, items) => {
+          return {
+            id: p.url,
+            label: p.title,
+            shape: "box",
+            color: {
+              background: index == 0 ? "#58B19F" : "#1B9CFC"
+            }
+          };
+        })
+      );
+
+      const edges = new vis.DataSet(
+        state.links.map(link => {
+          return {
+            from: link.source_url,
+            to: link.target_url
+          };
+        })
+      );
+      const container = document.getElementById("explorer");
+      const data = {
+        nodes,
+        edges
+      };
+      const network = new vis.Network(container, data, {
+        interaction: {
+          navigationButtons: true
+        }
+      });
     });
   }
 };
