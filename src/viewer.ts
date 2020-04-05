@@ -3,9 +3,9 @@ import { Session, Store } from "./models";
 declare let vis: any;
 const setup = () => {
   const message: Message = {
-    type: MessageType.GET_SESSIONS
+    type: MessageType.GET_SESSIONS,
   };
-  browser.runtime.sendMessage(message).then(sessions => {
+  browser.runtime.sendMessage(message).then((sessions) => {
     console.log("Session", sessions);
     _setupSessionSelect(sessions);
   });
@@ -13,7 +13,7 @@ const setup = () => {
 
 const _setupSessionSelect = (sessions: Session[] = []) => {
   const dropdown = document.querySelector("#session_select");
-  sessions.forEach(session => {
+  sessions.forEach((session) => {
     const optionElement = document.createElement("option");
     optionElement.innerText = session.name ? session.name : `${session.id}`;
     optionElement.setAttribute("value", `${session.id}`);
@@ -27,7 +27,7 @@ export const handleSubmit = () => {
   if (selectedValue) {
     const message: Message = {
       type: MessageType.GET_LINKS_AND_PAGES,
-      payload: selectedValue
+      payload: selectedValue,
     };
     browser.runtime.sendMessage(message).then((state: Pick<Store, "pages" | "links">) => {
       const nodes = new vis.DataSet(
@@ -37,29 +37,30 @@ export const handleSubmit = () => {
             label: p.title,
             shape: "box",
             color: {
-              background: index == 0 ? "#58B19F" : "#1B9CFC"
-            }
+              background: index == 0 ? "#58B19F" : "#1B9CFC",
+            },
           };
         })
       );
 
       const edges = new vis.DataSet(
-        state.links.map(link => {
+        state.links.map((link) => {
           return {
             from: link.source_url,
-            to: link.target_url
+            to: link.target_url,
+            arrows: "to",
           };
         })
       );
       const container = document.getElementById("explorer");
       const data = {
         nodes,
-        edges
+        edges,
       };
       const network = new vis.Network(container, data, {
         interaction: {
-          navigationButtons: true
-        }
+          navigationButtons: true,
+        },
       });
     });
   }
