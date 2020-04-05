@@ -54,6 +54,7 @@ export const handleSubmit = () => {
             arrows: "to",
             length: 80,
             id: link.id ?? link.timestamp,
+            physics: false,
           };
         })
       );
