@@ -4,7 +4,7 @@ export type Timestamp = number;
 export enum TransitionType {
   OTHERS,
   LINK,
-  RELOAD
+  RELOAD,
 }
 
 export interface Session {
@@ -23,6 +23,8 @@ export interface Link {
   source_url: string;
   target_url: string;
   timestamp: Timestamp;
+  notes?: string;
+  id: string;
 }
 
 export interface Store {
@@ -34,7 +36,7 @@ export interface Store {
 export const DEFAULT_STORE: Store = {
   pages: [],
   sessions: [],
-  links: []
+  links: [],
 };
 
 export interface ExpandedLink extends Link {

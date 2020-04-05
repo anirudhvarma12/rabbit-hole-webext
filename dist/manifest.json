@@ -10,5 +10,5 @@
   "browser_action": {
     "default_title": "Rabbit Hole"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com; object-src 'self'"
+  "content_security_policy": "script-src https://unpkg.com https://*.jquery.com https://*.bootstrapcdn.com 'self' 'unsafe-eval'; object-src 'self'"
 }

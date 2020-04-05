@@ -9,11 +9,11 @@ import { Link, Session, Id, Page } from "./models";
  * @param links
  */
 export const findSession = (url: string, sessions: Session[] = [], links: Link[] = []): Session | undefined => {
-  const latestLinkForUrl = links.find(l => l.target_url == url);
+  const latestLinkForUrl = links.find((l) => l.target_url == url);
   if (!latestLinkForUrl) {
     return;
   }
-  return sessions.find(session => {
+  return sessions.find((session) => {
     return session.id == latestLinkForUrl.session;
   });
 };
@@ -38,7 +38,7 @@ export const findOrCreateSessionForPage = (
 };
 
 export const getLinksForSession = (links: Link[], session: Id) => {
-  return links.filter(link => link.session == session);
+  return links.filter((link) => link.session == session).sort((link1, link2) => link1.timestamp - link2.timestamp);
 };
 
 export const findLatestLink = (links: Link[]) => {
@@ -49,7 +49,7 @@ export const findLatestLink = (links: Link[]) => {
 };
 
 export const findOrCreatePage = (url: string, title: string, pages: Page[]): { page: Page; added: boolean } => {
-  const page = pages.find(p => p.url == url);
+  const page = pages.find((p) => p.url == url);
   if (page) {
     return { page, added: false };
   }
@@ -58,5 +58,5 @@ export const findOrCreatePage = (url: string, title: string, pages: Page[]): { p
 };
 
 export const findSessionById = (sessions: Session[], id: Id) => {
-  return sessions.find(s => s.id === id);
+  return sessions.find((s) => s.id === id);
 };
