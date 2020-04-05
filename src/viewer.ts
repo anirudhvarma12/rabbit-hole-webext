@@ -1,6 +1,7 @@
 import { Message, MessageType } from "./messages";
 import { Session, Store } from "./models";
 import { DataSet, Properties, Edge, Node } from "vis";
+import { NotesEditor } from "./notes-editor";
 
 declare let vis: any;
 const setup = () => {
@@ -52,6 +53,7 @@ export const handleSubmit = () => {
             to: link.target_url,
             arrows: "to",
             length: 80,
+            id: link.id ?? link.timestamp,
           };
         })
       );
@@ -79,6 +81,19 @@ const handleClick = (clickData: Properties, edges: DataSet<Edge>, nodes: DataSet
     const firstUrl = clickData.nodes[0];
     window.open(firstUrl, "_blank");
     return;
+  } else if (clickData.edges?.length > 0) {
+    const message: Message = {
+      type: MessageType.GET_LINK,
+      payload: clickData.edges[0],
+    };
+    browser.runtime.sendMessage(message).then((link) => {
+      if (!link) {
+        alert("Link not found!");
+      } else {
+        const editor = new NotesEditor();
+        editor.open(link);
+      }
+    });
   }
 };
 

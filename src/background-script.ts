@@ -1,6 +1,7 @@
 import { Link, Store, DEFAULT_STORE, ExpandedLink } from "./models";
 import { createSession, findLatestLink, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
 import { Message, MessageType } from "./messages";
+import { v4 as uuidv4 } from "uuid";
 
 //TODO Remove params and fragments
 
@@ -61,7 +62,8 @@ async function onDomLoaded(details: NavigationDetail) {
     session: session.id,
     source_url: sourceUrls[details.tabId],
     target_url: details.url,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    id: uuidv4(),
   };
   sourceUrls[details.tabId] = details.url;
   links.push(link);
@@ -69,11 +71,11 @@ async function onDomLoaded(details: NavigationDetail) {
 }
 
 const filter: browser.webNavigation.EventUrlFilters = { url: [{ hostContains: ".wikipedia" }] };
-browser.webNavigation.onCommitted.addListener(details => {
+browser.webNavigation.onCommitted.addListener((details) => {
   transitionTypes[details.tabId] = details.transitionType;
 }, filter);
 browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded, filter);
-browser.webNavigation.onCreatedNavigationTarget.addListener(async details => {
+browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   // If the user opens in a new tab, sourceTabId maintains the session.
   if (details.sourceTabId != -1) {
     tabSessionId[details.tabId] = tabSessionId[details.sourceTabId];
@@ -83,7 +85,7 @@ browser.webNavigation.onCreatedNavigationTarget.addListener(async details => {
     sourceUrls[details.tabId] = details.url;
   }
 });
-browser.webNavigation.onBeforeNavigate.addListener(async details => {
+browser.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const currentTab = await browser.tabs.query({ active: true, currentWindow: true });
   if (!sourceUrls[details.tabId]) {
     sourceUrls[details.tabId] = currentTab[0]?.url;
@@ -91,7 +93,7 @@ browser.webNavigation.onBeforeNavigate.addListener(async details => {
 }, filter);
 browser.browserAction.onClicked.addListener(() => {
   const data = {
-    url: "viewer.html"
+    url: "viewer.html",
   };
   browser.tabs.create(data);
 });
@@ -99,19 +101,27 @@ browser.browserAction.onClicked.addListener(() => {
 //Event Listeners for extension page
 browser.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
   if (message.type == MessageType.GET_SESSIONS) {
-    getStore().then(store => {
+    getStore().then((store) => {
       sendResponse(store.sessions);
     });
     return true;
   } else if (message.type == MessageType.GET_LINKS_AND_PAGES) {
     const sessionid = message.payload;
-    getStore().then(store => {
+    getStore().then((store) => {
       const links = getLinksForSession(store.links, sessionid);
-      const pages = store.pages.filter(page => {
-        const linkIndex = links.findIndex(l => l.source_url == page.url || l.target_url == page.url);
+      const pages = store.pages.filter((page) => {
+        const linkIndex = links.findIndex((l) => l.source_url == page.url || l.target_url == page.url);
         return linkIndex != -1;
       });
       sendResponse({ links, pages });
+    });
+    return true;
+  } else if (message.type === MessageType.GET_LINK) {
+    getStore().then((store) => {
+      const links = store.links;
+      // search accross both timestamp and ids for older implementations
+      const link = links.find((l) => l.id == message.payload || l.timestamp == message.payload);
+      sendResponse(link);
     });
     return true;
   }
