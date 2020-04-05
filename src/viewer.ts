@@ -1,5 +1,7 @@
 import { Message, MessageType } from "./messages";
 import { Session, Store } from "./models";
+import { DataSet, Properties, Edge, Node } from "vis";
+
 declare let vis: any;
 const setup = () => {
   const message: Message = {
@@ -49,6 +51,7 @@ export const handleSubmit = () => {
             from: link.source_url,
             to: link.target_url,
             arrows: "to",
+            length: 80,
           };
         })
       );
@@ -62,7 +65,20 @@ export const handleSubmit = () => {
           navigationButtons: true,
         },
       });
+      network.on("click", (clickData: any) => {
+        handleClick(clickData, edges, nodes);
+      });
     });
+  }
+};
+
+const handleClick = (clickData: Properties, edges: DataSet<Edge>, nodes: DataSet<Node>) => {
+  // If any nodes are clicked, redirect and open that article.
+  if (clickData.nodes?.length > 0) {
+    //We use URLs as ID.
+    const firstUrl = clickData.nodes[0];
+    window.open(firstUrl, "_blank");
+    return;
   }
 };
 
