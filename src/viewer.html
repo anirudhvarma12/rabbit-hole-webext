@@ -28,6 +28,40 @@
 
         </div>
     </div>
+    <div class="modal modal-md" id="notes-modal">
+        <div class="modal-dialong container mt-3">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Notes</h3>
+                </div>
+                <!--Viewer Element-->
+                <div id="notes-viewer">
+                    <div class="modal-body">
+                        <div id="notes-render-area"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="edit-mode-btn" class="btn btn-secondary">
+                            Edit
+                        </button>
+                    </div>
+                </div>
+                <div id="notes-editor">
+                    <div class="modal-body">
+                        <form>
+                            <textarea placeholder="Markdown notes here!" id="notes-editor-textarea" cols="30" rows="10"
+                                class="form-control">
+                            </textarea>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="note-form-submit" class="btn btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -38,32 +72,7 @@
         crossorigin="anonymous"></script>
     <script src="/js/viewer.js"></script>
 
-    <div class="modal" id="notes-modal">
-        <div class="modal-dialong">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Notes</h3>
-                    <div class="modal-body">
-                        <!--Viewer Element-->
-                        <div id="notes-viewer"></div>
-                        <!--Editor Element-->
-                        <div id="notes-editor">
-                            <form>
-                                <textarea name="" id="notes-editor-textarea" cols="30" rows="10">
 
-                                </textarea>
-                                <div class="d-flex-justify-content-end">
-                                    <button type="button" id="note-form-submit" class="btn btn-primary">
-                                        Save
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 
 </html>
