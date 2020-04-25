@@ -24,6 +24,7 @@ export interface Link {
   target_url: string;
   timestamp: Timestamp;
   notes?: string;
+  label?: string;
   id: string;
 }
 

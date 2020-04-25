@@ -1,5 +1,5 @@
 import { Message, MessageType } from "./messages";
-import { Session, Store } from "./models";
+import { Session, Store, Id } from "./models";
 import { DataSet, Properties, Edge, Node } from "vis";
 import { NotesEditor } from "./notes-editor";
 
@@ -26,11 +26,14 @@ const _setupSessionSelect = (sessions: Session[] = []) => {
 
 export const handleSubmit = () => {
   const selectedValue = (document.querySelector("#session_select") as HTMLSelectElement).value;
-  console.log("Selected", selectedValue);
-  if (selectedValue) {
+  draw(selectedValue);
+};
+
+const draw = (selectedSession: string) => {
+  if (selectedSession) {
     const message: Message = {
       type: MessageType.GET_LINKS_AND_PAGES,
-      payload: selectedValue,
+      payload: selectedSession,
     };
     browser.runtime.sendMessage(message).then((state: Pick<Store, "pages" | "links">) => {
       const nodes = new vis.DataSet(
@@ -51,6 +54,7 @@ export const handleSubmit = () => {
           return {
             from: link.source_url,
             to: link.target_url,
+            label: link.label,
             arrows: "to",
             length: 80,
             id: link.id ?? link.timestamp,
@@ -92,6 +96,10 @@ const handleClick = (clickData: Properties, edges: DataSet<Edge>, nodes: DataSet
         alert("Link not found!");
       } else {
         const editor = new NotesEditor();
+        editor.onSave = () => {
+          const selectedValue = (document.querySelector("#session_select") as HTMLSelectElement).value;
+          draw(selectedValue);
+        };
         editor.open(link);
       }
     });

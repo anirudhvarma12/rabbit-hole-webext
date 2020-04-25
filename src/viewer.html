@@ -48,9 +48,22 @@
                 <div id="notes-editor">
                     <div class="modal-body">
                         <form>
-                            <textarea placeholder="Markdown notes here!" id="notes-editor-textarea" cols="30" rows="10"
-                                class="form-control">
+                            <div class="form-row"><label>Label</label>
+                                <input class="form-control" type="text" id="notes-editor-label" />
+                                <small class="form-text">
+                                    This label will be shown on the arrow connecting two pages.
+                                </small>
+                            </div>
+                            <div class="form-row"><label>Notes</label>
+                                <textarea placeholder="Notes" id="notes-editor-textarea" cols="30" rows="10"
+                                    class="form-control">
                             </textarea>
+                                <small class="form-text">
+                                    Markdown is supported
+                                </small>
+                            </div>
+
+
                         </form>
                     </div>
                     <div class="modal-footer">

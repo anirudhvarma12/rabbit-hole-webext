@@ -9,9 +9,12 @@ const MODAL_SELECTOR = "#notes-modal";
 const VIEWER_SUBMIT_SELECTOR = "#note-form-submit";
 const NOTES_VIEW_AREA_SELECTOR = "#notes-render-area";
 const EDIT_MODE_BTN_SELCETOR = "#edit-mode-btn";
+const EDITOR_LABEL_SELECTOR = "#notes-editor-label";
 
 export class NotesEditor {
   private link: Link;
+
+  onSave(){}
 
   open(link: Link) {
     this.link = link;
@@ -31,18 +34,22 @@ export class NotesEditor {
   }
 
   private saveNotes() {
-    const input = (document.querySelector(EDITOR_TEXTAREA_SELECTOR) as HTMLInputElement).value;
+    const description = (document.querySelector(EDITOR_TEXTAREA_SELECTOR) as HTMLInputElement).value;
+    const label = (document.querySelector(EDITOR_LABEL_SELECTOR) as HTMLInputElement).value;
     const savePayload: Message = {
-      type: MessageType.SAVE_LINK_NOTE,
+      type: MessageType.SAVE_LINK,
       payload: {
         id: this.link.id ?? this.link.timestamp,
-        value: input,
+        description,
+        label,
       },
     };
     var _class = this;
     browser.runtime.sendMessage(savePayload).then(() => {
-      _class.link.notes = input;
-      _class.renderViewer();
+      _class.link.notes = description;
+      //@ts-ignore
+      $(MODAL_SELECTOR).modal("hide");
+      this.onSave()
     });
   }
 
@@ -66,6 +73,8 @@ export class NotesEditor {
 
   private renderEditor() {
     const textarea = document.querySelector(EDITOR_TEXTAREA_SELECTOR) as HTMLTextAreaElement;
+    const labelInput = document.querySelector(EDITOR_LABEL_SELECTOR) as HTMLTextAreaElement;
+    labelInput.value = this.link.label ?? "";
     textarea.value = this.link.notes ?? "";
     document.querySelector(VIEWER_SELECTOR).setAttribute("style", "display:none");
     document.querySelector(EDITOR_SELECTOR).setAttribute("style", "display:block");
