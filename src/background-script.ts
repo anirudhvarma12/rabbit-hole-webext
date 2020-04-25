@@ -124,13 +124,14 @@ browser.runtime.onMessage.addListener((message: Message, sender, sendResponse) =
       sendResponse(link);
     });
     return true;
-  } else if (message.type === MessageType.SAVE_LINK_NOTE) {
+  } else if (message.type === MessageType.SAVE_LINK) {
     getStore().then((store) => {
       const links = [...store.links];
-      const { id, value } = message.payload;
+      const { id, description, label } = message.payload;
       const linkIndex = links.findIndex((l) => l.id === id || l.timestamp === id);
       if (linkIndex != -1) {
-        links[linkIndex].notes = value;
+        links[linkIndex].notes = description;
+        links[linkIndex].label = label;
         browser.storage.local.set({ links });
         sendResponse(links[linkIndex]);
       }
