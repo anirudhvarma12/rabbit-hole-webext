@@ -1,7 +1,7 @@
-import { Link, Store, DEFAULT_STORE, ExpandedLink } from "./models";
-import { createSession, findLatestLink, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
-import { Message, MessageType } from "./messages";
 import { v4 as uuidv4 } from "uuid";
+import { Message, MessageType } from "./messages";
+import { DEFAULT_STORE, Link, Store } from "./models";
+import { createSession, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
 
 //TODO Remove params and fragments
 
@@ -21,9 +21,14 @@ export const PAGE_LIST = "pages";
 export const LINK_LIST = "links";
 export const SESSION_LIST = "sessions";
 
+// Map to store session id against a tab id.
 const tabSessionId: Record<number, number> = {};
+// Map to strore the previous url that the user is navigating from against a tab id.
 const sourceUrls: Record<number, string> = {};
+// Maps the transition type against a tab id.
 const transitionTypes: Record<number, string> = {};
+// Maps the transition qualifiers (forward_back) against a tab id.
+const transitionQualifiers: Record<number, browser.webNavigation.TransitionQualifier[]> = {};
 
 export const getStore = async (): Promise<Store> => {
   const store = await browser.storage.local.get();
@@ -33,7 +38,18 @@ export const getStore = async (): Promise<Store> => {
   return store as Store;
 };
 
+const isUserGoingForwardOrBack = (tabId: number): boolean => {
+  const qualifiers = transitionQualifiers[tabId] ?? [];
+  if (qualifiers.length == 0) {
+    return false;
+  }
+  return qualifiers.includes("forward_back");
+};
+
 async function onDomLoaded(details: NavigationDetail) {
+  if(isUserGoingForwardOrBack(details.tabId)){
+    return;
+  }
   const currentTab = await browser.tabs.get(details.tabId);
   const currentTitle = currentTab.title;
   const store = await getStore();
@@ -71,10 +87,24 @@ async function onDomLoaded(details: NavigationDetail) {
 }
 
 const filter: browser.webNavigation.EventUrlFilters = { url: [{ hostContains: ".wikipedia" }] };
+
+/**
+ * Listen to onCommit because we get transition type and qualifier here.
+ */
 browser.webNavigation.onCommitted.addListener((details) => {
   transitionTypes[details.tabId] = details.transitionType;
+  transitionQualifiers[details.tabId] = details.transitionQualifiers;
 }, filter);
+
+/**
+ * Listening to onDOMContentLoaded means that we do not have to do extra effort 
+ * to get page title
+ */
 browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded, filter);
+
+/**
+ * Provides the source URL/tab id when the user opens a link in the new tab.
+ */
 browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   // If the user opens in a new tab, sourceTabId maintains the session.
   if (details.sourceTabId != -1) {
@@ -85,12 +115,14 @@ browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
     sourceUrls[details.tabId] = details.url;
   }
 });
+
 browser.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const currentTab = await browser.tabs.query({ active: true, currentWindow: true });
   if (!sourceUrls[details.tabId]) {
     sourceUrls[details.tabId] = currentTab[0]?.url;
   }
 }, filter);
+
 browser.browserAction.onClicked.addListener(() => {
   const data = {
     url: "viewer.html",
