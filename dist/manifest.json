@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Rabbit Hole [TS]",
+  "name": "Rabbit Hole",
   "version": "1.0",
-  "description": "An extension to map your journey as you down the Wikipedia Rabbit Hole",
+  "description": "A Firefox Extension to trace your Wikipedia Journeys",
   "background": {
     "scripts": ["js/background.js"]
   },

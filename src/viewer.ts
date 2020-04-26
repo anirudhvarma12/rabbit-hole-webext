@@ -16,6 +16,11 @@ const setup = () => {
 
 const _setupSessionSelect = (sessions: Session[] = []) => {
   const dropdown = document.querySelector("#session_select");
+  if(sessions.length==0){
+    document.querySelector("#main").className = "is-unused";
+  }else{
+    document.querySelector("#main").className = "";
+  }
   sessions.forEach((session) => {
     const optionElement = document.createElement("option");
     optionElement.innerText = session.name ? session.name : `${session.id}`;
