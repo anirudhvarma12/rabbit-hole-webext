@@ -15,17 +15,28 @@
 </head>
 
 <body class="p-4 h-100">
-    <div class="d-flex flex-column h-100">
-        <div class="d-flex justify-content-between">
-            <h1>Rabbit Hole</h1>
-            <div class="d-flex align-items-center">
-                <select name="session_select" id="session_select" placeholder="Select Session"
-                    class="form-control mr-2"></select>
-                <button class="btn btn-primary" id="submit_btn">Explore!</button>
-            </div>
-        </div>
-        <div id="explorer" style="width: 100%; height: 80%;">
+    <div id="main">
 
+
+        <div class="d-flex flex-column h-100">
+            <div class="d-flex justify-content-between">
+                <h1>Rabbit Hole</h1>
+                <div class="d-flex align-items-center" id="explore-form">
+                    <select name="session_select" id="session_select" placeholder="Select Session"
+                        class="form-control mr-2"></select>
+                    <button class="btn btn-primary" id="submit_btn">Explore!</button>
+                </div>
+            </div>
+            <div id="explorer" style="width: 100%;">
+
+            </div>
+            <div id="placeholder" class="text-center">
+                <img src="./assets/compass.svg" style="height: 150px;" />
+                <h1>Start Exploring</h1>
+                <p>
+                    Rabbit Hole works in the background to trace your journey through the Wikipedia.
+                </p>
+            </div>
         </div>
     </div>
     <div class="modal modal-md" id="notes-modal">
@@ -75,6 +86,10 @@
             </div>
         </div>
     </div>
+    <small class="text-center text-center pb-2 d-block">
+        Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a
+            href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+    </small>
 
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

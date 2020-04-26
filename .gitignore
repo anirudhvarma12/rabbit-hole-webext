@@ -115,3 +115,4 @@ dist/js
 .pnp.*
 dist/viewer.html
 dist/viewer.css
+dist/assets

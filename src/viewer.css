@@ -1,0 +1,19 @@
+#main.is-unused #explorer {
+    display: none;
+}
+
+#main.is-unused #explore-form {
+    display: none !important;
+}
+
+#main.is-unused #placeholder {
+    display: block;
+}
+
+#placeholder {
+    display: none;
+}
+
+#explorer, #placeholder {
+    height: 80vh;
+}
