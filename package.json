@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@types/firefox-webext-browser": "^70.0.1",
+    "bootstrap": "^4.5.0",
     "commonmark": "^0.29.1",
+    "jquery": "^3.5.1",
     "uuid": "^7.0.3",
     "vis-data": "^6.6.1",
     "vis-network": "^7.10.0"
