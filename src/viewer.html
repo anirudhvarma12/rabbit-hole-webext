@@ -1,106 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <style>
-        html {
-            height: 100%;
-        }
+      html {
+        height: 100%;
+      }
     </style>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Rabbit Hole</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="./viewer.css" />
-</head>
+  </head>
 
-<body class="p-4 h-100">
+  <body class="p-4 h-100">
     <div id="main">
-
-
-        <div class="d-flex flex-column h-100">
-            <div class="d-flex justify-content-between">
-                <h1>Rabbit Hole</h1>
-                <div class="d-flex align-items-center" id="explore-form">
-                    <select name="session_select" id="session_select" placeholder="Select Session"
-                        class="form-control mr-2"></select>
-                    <button class="btn btn-primary" id="submit_btn">Explore!</button>
-                </div>
-            </div>
-            <div id="explorer" style="width: 100%;">
-
-            </div>
-            <div id="placeholder" class="text-center">
-                <img src="./assets/compass.svg" style="height: 150px;" />
-                <h1>Start Exploring</h1>
-                <p>
-                    Rabbit Hole works in the background to trace your journey through the Wikipedia.
-                </p>
-            </div>
+      <div class="d-flex flex-column h-100">
+        <div class="d-flex justify-content-between">
+          <h1>Rabbit Hole</h1>
+          <div class="d-flex align-items-center" id="explore-form">
+            <select
+              name="session_select"
+              id="session_select"
+              placeholder="Select Session"
+              class="form-control mr-2"
+            ></select>
+            <button class="btn btn-primary" id="submit_btn">Explore!</button>
+          </div>
         </div>
+        <div id="explorer" style="width: 100%;"> </div>
+        <div id="placeholder" class="text-center">
+          <img src="./assets/compass.svg" style="height: 150px;" />
+          <h1>Start Exploring</h1>
+          <p>
+            Rabbit Hole works in the background to trace your journey through the Wikipedia.
+          </p>
+        </div>
+      </div>
     </div>
     <div class="modal modal-md" id="notes-modal">
-        <div class="modal-dialong container mt-3">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Notes</h3>
-                </div>
-                <!--Viewer Element-->
-                <div id="notes-viewer">
-                    <div class="modal-body">
-                        <div id="notes-render-area"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="edit-mode-btn" class="btn btn-secondary">
-                            Edit
-                        </button>
-                    </div>
-                </div>
-                <div id="notes-editor">
-                    <div class="modal-body">
-                        <form>
-                            <div class="form-row"><label>Label</label>
-                                <input class="form-control" type="text" id="notes-editor-label" />
-                                <small class="form-text">
-                                    This label will be shown on the arrow connecting two pages.
-                                </small>
-                            </div>
-                            <div class="form-row"><label>Notes</label>
-                                <textarea placeholder="Notes" id="notes-editor-textarea" cols="30" rows="10"
-                                    class="form-control">
-                            </textarea>
-                                <small class="form-text">
-                                    Markdown is supported
-                                </small>
-                            </div>
-
-
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="note-form-submit" class="btn btn-primary">
-                            Save
-                        </button>
-                    </div>
-                </div>
+      <div class="modal-dialong container mt-3">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Notes</h3>
+          </div>
+          <!--Viewer Element-->
+          <div id="notes-viewer">
+            <div class="modal-body">
+              <div id="notes-render-area"></div>
             </div>
+            <div class="modal-footer">
+              <button type="button" id="edit-mode-btn" class="btn btn-secondary">
+                Edit
+              </button>
+            </div>
+          </div>
+          <div id="notes-editor">
+            <div class="modal-body">
+              <form>
+                <div class="form-row"
+                  ><label>Label</label>
+                  <input class="form-control" type="text" id="notes-editor-label" />
+                  <small class="form-text">
+                    This label will be shown on the arrow connecting two pages.
+                  </small>
+                </div>
+                <div class="form-row"
+                  ><label>Notes</label>
+                  <textarea placeholder="Notes" id="notes-editor-textarea" cols="30" rows="10" class="form-control">
+                  </textarea>
+                  <small class="form-text">
+                    Markdown is supported
+                  </small>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="note-form-submit" class="btn btn-primary">
+                Save
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
     <small class="text-center text-center pb-2 d-block">
-        Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a
-            href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+      Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
+      <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
     </small>
 
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
     <script src="/js/viewer.js"></script>
-
-
-</body>
-
+  </body>
 </html>
