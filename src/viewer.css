@@ -1,19 +1,47 @@
-#main.is-unused #explorer {
-    display: none;
+#main.is-unused #explorer,
+#main.is-unselected #explorer {
+  display: none;
 }
 
 #main.is-unused #explore-form {
-    display: none !important;
+  display: none !important;
 }
 
-#main.is-unused #placeholder {
-    display: block;
+#main.is-unused #placeholder,
+#main.is-unselected #placeholder {
+  display: flex;
 }
 
 #placeholder {
-    display: none;
+  display: none;
+  flex-direction: column;
+  align-items: center;
 }
 
-#explorer, #placeholder {
-    height: 80vh;
+#explorer,
+#placeholder {
+  height: 80vh;
+}
+
+.carousel {
+  width: 500px;
+}
+
+.carousel-inner {
+  border-radius: 8px 8px 0 0;
+  box-shadow: -4px 0px 12px #eae9e9;
+}
+
+.carousel-item {
+  height: 300px;
+  padding: 25px;
+  background: #f4f4f4;
+}
+
+.carousel-item img {
+  max-width: 100%;
+}
+
+.carousel-indicators {
+  background-color: rgba(0, 0, 0, 0.15);
 }

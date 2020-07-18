@@ -3,6 +3,7 @@ import { Data, Edge, Network, Node } from "vis-network";
 import { Message, MessageType } from "./messages";
 import { Session, Store } from "./models";
 import { NotesEditor } from "./notes-editor";
+import "bootstrap/js/dist/carousel";
 
 const setup = () => {
   const message: Message = {
@@ -17,9 +18,9 @@ const setup = () => {
 const _setupSessionSelect = (sessions: Session[] = []) => {
   const dropdown = document.querySelector("#session_select");
   if (sessions.length == 0) {
-    document.querySelector("#main").className = "is-unused";
+    document.querySelector("#main").classList.add("is-unused");
   } else {
-    document.querySelector("#main").className = "";
+    document.querySelector("#main").classList.remove("is-unused");
   }
   sessions.forEach((session) => {
     const optionElement = document.createElement("option");
@@ -30,6 +31,7 @@ const _setupSessionSelect = (sessions: Session[] = []) => {
 };
 
 export const handleSubmit = () => {
+  document.querySelector("#main").classList.remove("is-unselected");
   const selectedValue = (document.querySelector("#session_select") as HTMLSelectElement).value;
   draw(selectedValue);
 };
