@@ -1,6 +1,8 @@
 import { Link } from "./models";
 import { HtmlRenderer, Parser } from "commonmark";
 import { Message, MessageType } from "./messages";
+import * as $ from "jquery";
+import "bootstrap/js/dist/modal";
 
 const EDITOR_SELECTOR = "#notes-editor";
 const EDITOR_TEXTAREA_SELECTOR = "#notes-editor-textarea";
@@ -14,7 +16,7 @@ const EDITOR_LABEL_SELECTOR = "#notes-editor-label";
 export class NotesEditor {
   private link: Link;
 
-  onSave(){}
+  onSave() {}
 
   open(link: Link) {
     this.link = link;
@@ -49,7 +51,7 @@ export class NotesEditor {
       _class.link.notes = description;
       //@ts-ignore
       $(MODAL_SELECTOR).modal("hide");
-      this.onSave()
+      this.onSave();
     });
   }
 

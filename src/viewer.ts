@@ -1,9 +1,10 @@
+import { Properties } from "vis";
+import { Data, Edge, Network, Node } from "vis-network";
 import { Message, MessageType } from "./messages";
-import { Session, Store, Id } from "./models";
-import { DataSet, Properties, Edge, Node } from "vis";
+import { Session, Store } from "./models";
 import { NotesEditor } from "./notes-editor";
+import "bootstrap/js/dist/carousel";
 
-declare let vis: any;
 const setup = () => {
   const message: Message = {
     type: MessageType.GET_SESSIONS,
@@ -16,10 +17,10 @@ const setup = () => {
 
 const _setupSessionSelect = (sessions: Session[] = []) => {
   const dropdown = document.querySelector("#session_select");
-  if(sessions.length==0){
-    document.querySelector("#main").className = "is-unused";
-  }else{
-    document.querySelector("#main").className = "";
+  if (sessions.length == 0) {
+    document.querySelector("#main").classList.add("is-unused");
+  } else {
+    document.querySelector("#main").classList.remove("is-unused");
   }
   sessions.forEach((session) => {
     const optionElement = document.createElement("option");
@@ -30,6 +31,7 @@ const _setupSessionSelect = (sessions: Session[] = []) => {
 };
 
 export const handleSubmit = () => {
+  document.querySelector("#main").classList.remove("is-unselected");
   const selectedValue = (document.querySelector("#session_select") as HTMLSelectElement).value;
   draw(selectedValue);
 };
@@ -41,38 +43,35 @@ const draw = (selectedSession: string) => {
       payload: selectedSession,
     };
     browser.runtime.sendMessage(message).then((state: Pick<Store, "pages" | "links">) => {
-      const nodes = new vis.DataSet(
-        state.pages.map((p, index, items) => {
-          return {
-            id: p.url,
-            label: p.title,
-            shape: "box",
-            color: {
-              background: index == 0 ? "#58B19F" : "#1B9CFC",
-            },
-          };
-        })
-      );
+      const nodes: Node[] = state.pages.map((p, index, items) => {
+        return {
+          id: p.url,
+          label: p.title,
+          shape: "box",
+          color: {
+            background: index == 0 ? "#58B19F" : "#1B9CFC",
+          },
+        };
+      });
 
-      const edges = new vis.DataSet(
-        state.links.map((link) => {
-          return {
-            from: link.source_url,
-            to: link.target_url,
-            label: link.label,
-            arrows: "to",
-            length: 80,
-            id: link.id ?? link.timestamp,
-            physics: false,
-          };
-        })
-      );
+      const edges: Edge[] = state.links.map((link) => {
+        return {
+          from: link.source_url,
+          to: link.target_url,
+          label: link.label,
+          arrows: "to",
+          length: 80,
+          id: link.id ?? link.timestamp,
+          physics: false,
+        };
+      });
+
       const container = document.getElementById("explorer");
-      const data = {
+      const data: Data = {
         nodes,
         edges,
       };
-      const network = new vis.Network(container, data, {
+      const network = new Network(container, data, {
         interaction: {
           navigationButtons: true,
         },
@@ -84,7 +83,7 @@ const draw = (selectedSession: string) => {
   }
 };
 
-const handleClick = (clickData: Properties, edges: DataSet<Edge>, nodes: DataSet<Node>) => {
+const handleClick = (clickData: Properties, edges: Edge[], nodes: Node[]) => {
   // If any nodes are clicked, redirect and open that article.
   if (clickData.nodes?.length > 0) {
     //We use URLs as ID.
