@@ -1,9 +1,9 @@
+import "bootstrap/js/dist/carousel";
 import { Properties } from "vis";
 import { Data, Edge, Network, Node } from "vis-network";
 import { Message, MessageType } from "./messages";
 import { Session, Store } from "./models";
 import { NotesEditor } from "./notes-editor";
-import "bootstrap/js/dist/carousel";
 
 const setup = () => {
   const message: Message = {

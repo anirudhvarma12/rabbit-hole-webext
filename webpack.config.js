@@ -25,10 +25,13 @@ module.exports = {
   },
   devtool: "inline-source-map",
   plugins: [
-    new CopyPlugin([
-      { from: "src/viewer.html", to: "viewer.html" },
-      { from: "src/viewer.css", to: "viewer.css" },
-      { from: "assets", to: "assets" },
-    ]),
+    new CopyPlugin({
+      patterns: [
+        { from: "src/viewer.html", to: "viewer.html" },
+        { from: "src/viewer.css", to: "viewer.css" },
+        { from: "assets", to: "assets" },
+        { from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js', to:"js"}
+      ],
+    }),
   ],
 };

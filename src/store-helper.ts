@@ -1,4 +1,4 @@
-import { Link, Session, Id, Page } from "./models";
+import { Id, Link, Page, Session } from "./models";
 
 /**
  * Finds the latest Link where the given URL is the target and returns the session for that.
