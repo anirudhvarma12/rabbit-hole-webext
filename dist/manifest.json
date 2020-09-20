@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
   "name": "Rabbit Hole",
-  "version": "1.0",
+  "version": "1.1",
   "description": "A Firefox Extension to trace your Wikipedia Journeys",
   "background": {
-    "scripts": ["js/browser-polyfill.js","js/background.js"]
+    "scripts": ["js/browser-polyfill.js", "js/background.js"]
   },
   "permissions": ["storage", "webNavigation", "tabs"],
   "browser_action": {
