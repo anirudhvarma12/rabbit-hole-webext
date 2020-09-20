@@ -1,8 +1,8 @@
-import { Link } from "./models";
-import { HtmlRenderer, Parser } from "commonmark";
-import { Message, MessageType } from "./messages";
-import * as $ from "jquery";
 import "bootstrap/js/dist/modal";
+import { HtmlRenderer, Parser } from "commonmark";
+import * as $ from "jquery";
+import { Message, MessageType } from "./messages";
+import { Link } from "./models";
 
 const EDITOR_SELECTOR = "#notes-editor";
 const EDITOR_TEXTAREA_SELECTOR = "#notes-editor-textarea";

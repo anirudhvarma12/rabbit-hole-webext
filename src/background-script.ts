@@ -2,9 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Message, MessageType } from "./messages";
 import { DEFAULT_STORE, Link, Store } from "./models";
 import { createSession, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
-
 //TODO Remove params and fragments
-
 export type BrowserTransitionType = browser.webNavigation.TransitionType;
 
 interface NavigationDetail {

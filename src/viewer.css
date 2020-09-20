@@ -45,3 +45,67 @@
 .carousel-indicators {
   background-color: rgba(0, 0, 0, 0.15);
 }
+
+div.vis-network div.vis-navigation div.vis-button.vis-up,
+div.vis-network div.vis-navigation div.vis-button.vis-down,
+div.vis-network div.vis-navigation div.vis-button.vis-left,
+div.vis-network div.vis-navigation div.vis-button.vis-right,
+div.vis-network div.vis-navigation div.vis-button.vis-zoomIn,
+div.vis-network div.vis-navigation div.vis-button.vis-zoomOut,
+div.vis-network div.vis-navigation div.vis-button.vis-zoomExtends {
+  background-image: none !important;
+}
+
+div.vis-network div.vis-navigation div.vis-button:hover {
+  box-shadow: none !important;
+}
+
+.vis-button:after {
+  font-size: 2em;
+  color: gray;
+}
+
+.vis-button:hover:after {
+  font-size: 2em;
+  color: lightgray;
+}
+
+.vis-button.vis-up:after {
+  content: "▲";
+}
+
+.vis-button.vis-down:after {
+  content: "▼";
+}
+
+.vis-button.vis-left:after {
+  content: "◀";
+}
+
+.vis-button.vis-right:after {
+  content: "▶";
+}
+
+.vis-button.vis-zoomIn:after {
+  content: "+";
+  font-weight: bold;
+}
+
+.vis-button.vis-zoomOut:after {
+  content: "−";
+  font-weight: bold;
+}
+
+.vis-button.vis-zoomExtends:after {
+  content: "⤧";
+}
+
+.vis-navigation {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
