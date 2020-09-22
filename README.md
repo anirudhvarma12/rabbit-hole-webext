@@ -17,7 +17,7 @@ Simply click on the line connecting two pages and add you annotations and Markdo
 # Downloads
 
 1. [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rabbit-hole/)
-2. [Chrome] - (https://chrome.google.com/webstore/detail/rabbit-hole/hpemmagcednhlipcekbeikmghgihahai?hl=en-GB)
+2. [Chrome](https://chrome.google.com/webstore/detail/rabbit-hole/hpemmagcednhlipcekbeikmghgihahai?hl=en-GB)
 
 # Development
 
