@@ -116,3 +116,4 @@ dist/js
 dist/viewer.html
 dist/viewer.css
 dist/assets
+.DS_Store
