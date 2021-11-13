@@ -7,7 +7,7 @@ import {
   findSessionById,
   getLinksForSession,
 } from "./store-helper";
-//TODO Remove params and fragments
+
 export type BrowserTransitionType = browser.webNavigation.TransitionType;
 
 interface NavigationDetail {
@@ -35,6 +35,10 @@ const transitionQualifiers: Record<
   number,
   browser.webNavigation.TransitionQualifier[]
 > = {};
+
+const filter: browser.webNavigation.EventUrlFilters = {
+  url: [{ urlContains: "https" }, { urlContains: "http" }],
+};
 
 export const getStore = async (): Promise<Store> => {
   const store = await browser.storage.local.get();
@@ -99,13 +103,13 @@ async function onDomLoaded(details: NavigationDetail) {
 browser.webNavigation.onCommitted.addListener((details) => {
   transitionTypes[details.tabId] = details.transitionType;
   transitionQualifiers[details.tabId] = details.transitionQualifiers;
-});
+}, filter);
 
 /**
  * Listening to onDOMContentLoaded means that we do not have to do extra effort
  * to get page title
  */
-browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded);
+browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded, filter);
 
 /**
  * Provides the source URL/tab id when the user opens a link in the new tab.
@@ -119,7 +123,7 @@ browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   } else {
     sourceUrls[details.tabId] = details.url;
   }
-});
+}, filter);
 
 browser.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const currentTab = await browser.tabs.query({
@@ -129,7 +133,7 @@ browser.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (!sourceUrls[details.tabId]) {
     sourceUrls[details.tabId] = currentTab[0]?.url;
   }
-});
+}, filter);
 
 browser.browserAction.onClicked.addListener(() => {
   browser.sidebarAction.open();
