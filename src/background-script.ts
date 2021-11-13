@@ -181,6 +181,17 @@ browser.runtime.onMessage.addListener(
         }
       });
       return true;
+    } else if (message.type === MessageType.DELETE_SESSION) {
+      getStore().then((store) => {
+        const sessions = store.sessions.filter(
+          (session) => session.id !== message.payload
+        );
+        const links = store.links.filter(
+          (link) => link.session !== message.payload
+        );
+        browser.storage.local.set({ sessions, links });
+        return true;
+      });
     }
   }
 );

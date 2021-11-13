@@ -11,14 +11,33 @@ function getSessions(): Promise<Session[]> {
   return browser.runtime.sendMessage(message);
 }
 
+function getDeleteSessionButton(session: Session) {
+  const button = document.createElement("button");
+  button.className = "delete-btn";
+  button.addEventListener("click", () => {
+    const message: Message = {
+      type: MessageType.DELETE_SESSION,
+      payload: session.id,
+    };
+    return browser.runtime.sendMessage(message).then(() => {
+      const listItem = document.querySelector(`#session-${session.id}`);
+      document.querySelector(CONTAINER_ID).removeChild(listItem);
+    });
+  });
+  button.innerText = "Delete";
+  return button;
+}
+
 function getSessionList(sessions: Session[] = []): HTMLElement[] {
   return sessions.map((session) => {
     const element = document.createElement("div");
+    element.id = `session-${session.id}`;
     const link = document.createElement("a");
     link.href = `viewer.html?sessionId=${session.id}`;
     link.target = "_blank";
     link.innerText = session.name;
     element.appendChild(link);
+    element.appendChild(getDeleteSessionButton(session));
     return element;
   });
 }

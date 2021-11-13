@@ -32,17 +32,22 @@
             <button class="btn btn-primary" id="submit_btn">Explore!</button>
           </div>
         </div>
-        <div id="explorer" style="width: 100%;"> </div>
+        <div id="explorer" style="width: 100%"></div>
         <div id="placeholder" class="text-center">
-          <img src="./assets/icon.svg" style="height: 150px;" />
+          <img src="./assets/icon.svg" style="height: 150px" />
           <h1>Start Exploring</h1>
           <p>
-            Start exploring Wikipedia, Rabbit Hole works in the background to trace your journey.
+            Start exploring Wikipedia, Rabbit Hole works in the background to
+            trace your journey.
           </p>
 
           <div id="helpSlides" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
-              <li data-target="#helpSlides" data-slide-to="0" class="active"></li>
+              <li
+                data-target="#helpSlides"
+                data-slide-to="0"
+                class="active"
+              ></li>
               <li data-target="#helpSlides" data-slide-to="1"></li>
               <li data-target="#helpSlides" data-slide-to="2"></li>
             </ol>
@@ -73,7 +78,11 @@
               <div id="notes-render-area"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" id="edit-mode-btn" class="btn btn-secondary">
+              <button
+                type="button"
+                id="edit-mode-btn"
+                class="btn btn-secondary"
+              >
                 Edit
               </button>
             </div>
@@ -81,25 +90,37 @@
           <div id="notes-editor">
             <div class="modal-body">
               <form>
-                <div class="form-row"
-                  ><label>Label</label>
-                  <input class="form-control" type="text" id="notes-editor-label" />
+                <div class="form-row">
+                  <label>Label</label>
+                  <input
+                    class="form-control"
+                    type="text"
+                    id="notes-editor-label"
+                  />
                   <small class="form-text">
                     This label will be shown on the arrow connecting two pages.
                   </small>
                 </div>
-                <div class="form-row"
-                  ><label>Notes</label>
-                  <textarea placeholder="Notes" id="notes-editor-textarea" cols="30" rows="10" class="form-control">
+                <div class="form-row">
+                  <label>Notes</label>
+                  <textarea
+                    placeholder="Notes"
+                    id="notes-editor-textarea"
+                    cols="30"
+                    rows="10"
+                    class="form-control"
+                  >
                   </textarea>
-                  <small class="form-text">
-                    Markdown is supported
-                  </small>
+                  <small class="form-text"> Markdown is supported </small>
                 </div>
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" id="note-form-submit" class="btn btn-primary">
+              <button
+                type="button"
+                id="note-form-submit"
+                class="btn btn-primary"
+              >
                 Save
               </button>
             </div>
@@ -108,7 +129,11 @@
       </div>
     </div>
     <small class="text-center text-center pb-2 d-block">
-      Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
+      Icons made by
+      <a href="https://www.flaticon.com/authors/freepik" title="Freepik"
+        >Freepik</a
+      >
+      from
       <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
     </small>
     <script src="/js/browser-polyfill.js"></script>
