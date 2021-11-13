@@ -7,6 +7,7 @@ module.exports = {
   entry: {
     background: path.join(SRC_DIR, "background-script.ts"),
     viewer: path.join(SRC_DIR, "viewer.ts"),
+    sidebar: path.join(SRC_DIR, "sidebar.ts"),
   },
   output: {
     path: DIST_DIR,
@@ -28,9 +29,13 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: "src/viewer.html", to: "viewer.html" },
+        { from: "src/sidebar.html", to: "sidebar.html" },
         { from: "src/viewer.css", to: "viewer.css" },
         { from: "assets", to: "assets" },
-        { from: 'node_modules/webextension-polyfill/dist/browser-polyfill.js', to:"js"}
+        {
+          from: "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+          to: "js",
+        },
       ],
     }),
   ],

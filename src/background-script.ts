@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { Message, MessageType } from "./messages";
 import { DEFAULT_STORE, Link, Store } from "./models";
-import { createSession, findOrCreatePage, findSessionById, getLinksForSession } from "./store-helper";
+import {
+  createSession,
+  findOrCreatePage,
+  findSessionById,
+  getLinksForSession,
+} from "./store-helper";
 //TODO Remove params and fragments
 export type BrowserTransitionType = browser.webNavigation.TransitionType;
 
@@ -26,7 +31,10 @@ const sourceUrls: Record<number, string> = {};
 // Maps the transition type against a tab id.
 const transitionTypes: Record<number, string> = {};
 // Maps the transition qualifiers (forward_back) against a tab id.
-const transitionQualifiers: Record<number, browser.webNavigation.TransitionQualifier[]> = {};
+const transitionQualifiers: Record<
+  number,
+  browser.webNavigation.TransitionQualifier[]
+> = {};
 
 export const getStore = async (): Promise<Store> => {
   const store = await browser.storage.local.get();
@@ -45,7 +53,7 @@ const isUserGoingForwardOrBack = (tabId: number): boolean => {
 };
 
 async function onDomLoaded(details: NavigationDetail) {
-  if(isUserGoingForwardOrBack(details.tabId)){
+  if (isUserGoingForwardOrBack(details.tabId)) {
     return;
   }
   const currentTab = await browser.tabs.get(details.tabId);
@@ -54,18 +62,19 @@ async function onDomLoaded(details: NavigationDetail) {
   const sessions = store.sessions || [];
   const links = store.links || [];
   const pages = store.pages || [];
-  const existinSessionForTab = tabSessionId[details.tabId];
+  const existingSessionForTab = tabSessionId[details.tabId];
   let session;
   if (
-    !existinSessionForTab ||
-    (transitionTypes[details.tabId] != "reload" && transitionTypes[details.tabId] != "link")
+    !existingSessionForTab ||
+    (transitionTypes[details.tabId] != "reload" &&
+      transitionTypes[details.tabId] != "link")
   ) {
     session = createSession();
     session.name = currentTitle;
     sessions.push(session);
     tabSessionId[details.tabId] = session.id;
   } else {
-    session = findSessionById(sessions, existinSessionForTab);
+    session = findSessionById(sessions, existingSessionForTab);
   }
   const pageInfo = findOrCreatePage(details.url, currentTitle, pages);
   if (pageInfo.added) {
@@ -84,21 +93,19 @@ async function onDomLoaded(details: NavigationDetail) {
   browser.storage.local.set({ sessions, pages, links });
 }
 
-const filter: browser.webNavigation.EventUrlFilters = { url: [{ hostContains: ".wikipedia" }] };
-
 /**
  * Listen to onCommit because we get transition type and qualifier here.
  */
 browser.webNavigation.onCommitted.addListener((details) => {
   transitionTypes[details.tabId] = details.transitionType;
   transitionQualifiers[details.tabId] = details.transitionQualifiers;
-}, filter);
+});
 
 /**
- * Listening to onDOMContentLoaded means that we do not have to do extra effort 
+ * Listening to onDOMContentLoaded means that we do not have to do extra effort
  * to get page title
  */
-browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded, filter);
+browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded);
 
 /**
  * Provides the source URL/tab id when the user opens a link in the new tab.
@@ -115,57 +122,65 @@ browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
 });
 
 browser.webNavigation.onBeforeNavigate.addListener(async (details) => {
-  const currentTab = await browser.tabs.query({ active: true, currentWindow: true });
+  const currentTab = await browser.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
   if (!sourceUrls[details.tabId]) {
     sourceUrls[details.tabId] = currentTab[0]?.url;
   }
-}, filter);
+});
 
 browser.browserAction.onClicked.addListener(() => {
-  const data = {
-    url: "viewer.html",
-  };
-  browser.tabs.create(data);
+  browser.sidebarAction.open();
 });
 
 //Event Listeners for extension page
-browser.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
-  if (message.type == MessageType.GET_SESSIONS) {
-    getStore().then((store) => {
-      sendResponse(store.sessions);
-    });
-    return true;
-  } else if (message.type == MessageType.GET_LINKS_AND_PAGES) {
-    const sessionid = message.payload;
-    getStore().then((store) => {
-      const links = getLinksForSession(store.links, sessionid);
-      const pages = store.pages.filter((page) => {
-        const linkIndex = links.findIndex((l) => l.source_url == page.url || l.target_url == page.url);
-        return linkIndex != -1;
+browser.runtime.onMessage.addListener(
+  (message: Message, sender, sendResponse) => {
+    if (message.type == MessageType.GET_SESSIONS) {
+      getStore().then((store) => {
+        sendResponse(store.sessions);
       });
-      sendResponse({ links, pages });
-    });
-    return true;
-  } else if (message.type === MessageType.GET_LINK) {
-    getStore().then((store) => {
-      const links = store.links;
-      // search accross both timestamp and ids for older implementations
-      const link = links.find((l) => l.id == message.payload || l.timestamp == message.payload);
-      sendResponse(link);
-    });
-    return true;
-  } else if (message.type === MessageType.SAVE_LINK) {
-    getStore().then((store) => {
-      const links = [...store.links];
-      const { id, description, label } = message.payload;
-      const linkIndex = links.findIndex((l) => l.id === id || l.timestamp === id);
-      if (linkIndex != -1) {
-        links[linkIndex].notes = description;
-        links[linkIndex].label = label;
-        browser.storage.local.set({ links });
-        sendResponse(links[linkIndex]);
-      }
-    });
-    return true;
+      return true;
+    } else if (message.type == MessageType.GET_LINKS_AND_PAGES) {
+      const sessionid = message.payload;
+      getStore().then((store) => {
+        const links = getLinksForSession(store.links, sessionid);
+        const pages = store.pages.filter((page) => {
+          const linkIndex = links.findIndex(
+            (l) => l.source_url == page.url || l.target_url == page.url
+          );
+          return linkIndex != -1;
+        });
+        sendResponse({ links, pages });
+      });
+      return true;
+    } else if (message.type === MessageType.GET_LINK) {
+      getStore().then((store) => {
+        const links = store.links;
+        // search across both timestamp and ids for older implementations
+        const link = links.find(
+          (l) => l.id == message.payload || l.timestamp == message.payload
+        );
+        sendResponse(link);
+      });
+      return true;
+    } else if (message.type === MessageType.SAVE_LINK) {
+      getStore().then((store) => {
+        const links = [...store.links];
+        const { id, description, label } = message.payload;
+        const linkIndex = links.findIndex(
+          (l) => l.id === id || l.timestamp === id
+        );
+        if (linkIndex != -1) {
+          links[linkIndex].notes = description;
+          links[linkIndex].label = label;
+          browser.storage.local.set({ links });
+          sendResponse(links[linkIndex]);
+        }
+      });
+      return true;
+    }
   }
-});
+);
