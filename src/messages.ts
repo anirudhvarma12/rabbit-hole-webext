@@ -10,4 +10,6 @@ export enum MessageType {
   SAVE_LINK,
   DELETE_SESSION,
   START_RECORDING,
+  STOP_RECORDING,
+  TAB_CHANGED,
 }

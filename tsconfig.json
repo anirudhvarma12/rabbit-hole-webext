@@ -5,7 +5,8 @@
     "target": "es5",
     "sourceMap": true,
     "lib": ["es2017", "dom"],
-    "typeRoots": ["node_modules/@types", "types/"]
+    "typeRoots": ["node_modules/@types", "types/"],
+    "downlevelIteration": true
   },
   "include": ["src/*"]
 }

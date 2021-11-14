@@ -10,7 +10,6 @@ const setup = () => {
     type: MessageType.GET_SESSIONS,
   };
   browser.runtime.sendMessage(message).then((sessions) => {
-    console.log("Session", sessions);
     _setupSessionSelect(sessions);
   });
 };
@@ -39,7 +38,6 @@ export const handleSubmit = () => {
 };
 
 const draw = (selectedSession: string) => {
-  console.log("in draw", selectedSession);
   if (selectedSession) {
     const message: Message = {
       type: MessageType.GET_LINKS_AND_PAGES,
@@ -71,7 +69,6 @@ const draw = (selectedSession: string) => {
         });
 
         const container = document.getElementById("explorer");
-        console.log(container);
         const data: Data = {
           nodes,
           edges,

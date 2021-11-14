@@ -21,11 +21,21 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      body.is-active-recording #btnStartRecording {
+        display: none;
+      }
+      #btnEndRecording {
+        display: none;
+      }
+      body.is-active-recording #btnEndRecording {
+        display: initial;
+      }
     </style>
   </head>
   <body>
     <header>
-      <button id="btnStartRecording">Start Recording</button>
+      <button id="btnStartRecording">New Session</button>
+      <button id="btnEndRecording">Stop Session</button>
     </header>
     <main id="main"></main>
 

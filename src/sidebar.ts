@@ -49,17 +49,59 @@ function setupButtons() {
       await browser.runtime.sendMessage({
         type: MessageType.START_RECORDING,
       });
+      refreshSessionList();
+    });
+
+  document
+    .querySelector("#btnEndRecording")
+    .addEventListener("click", async () => {
+      await browser.runtime.sendMessage({
+        type: MessageType.STOP_RECORDING,
+      });
     });
 }
 
-async function main() {
+function _onTabChanged(payload: { activeSession: boolean }) {
+  if (payload.activeSession) {
+    document.body.classList.add("is-active-recording");
+  } else {
+    document.body.classList.remove("is-active-recording");
+  }
+}
+
+function setupBackgroundScriptListeners() {
+  browser.runtime.onMessage.addListener((message) => {
+    if (message.type === MessageType.TAB_CHANGED) {
+      _onTabChanged(message.payload);
+    }
+  });
+}
+
+function refreshSessionList() {
+  const container = document.querySelector(CONTAINER_ID);
+  // remove existing list items
+  let childNode = container.firstChild;
+  while (childNode !== null) {
+    container.removeChild(childNode);
+    childNode = container.firstChild;
+  }
+  // re-create list
+  createSessionList();
+}
+
+async function createSessionList() {
   const sessions = await getSessions();
   const elements = getSessionList(sessions);
   const container = document.querySelector(CONTAINER_ID);
   elements.forEach((element) => {
     container.appendChild(element);
   });
+}
+
+async function main() {
+  createSessionList();
   setupButtons();
+  setupBackgroundScriptListeners();
 }
 
 main().then();

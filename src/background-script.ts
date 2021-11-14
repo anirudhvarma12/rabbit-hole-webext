@@ -26,7 +26,7 @@ export const SESSION_LIST = "sessions";
 
 const tabsWithActiveRecording: number[] = [];
 // Map to store session id against a tab id.
-const tabSessionId: Record<number, number> = {};
+const tabSessionId = new Map<number, number>();
 // Map to store the previous url that the user is navigating from against a tab id.
 const sourceUrls: Record<number, string> = {};
 // Maps the transition type against a tab id.
@@ -79,7 +79,7 @@ async function createSessionForTabAndURL(tabId: number, url: string) {
   const sessions = store.sessions || [];
   const links = store.links || [];
   const pages = store.pages || [];
-  const existingSessionForTab = tabSessionId[tabId];
+  const existingSessionForTab = tabSessionId.get(tabId);
   let session;
   if (
     !existingSessionForTab ||
@@ -88,7 +88,7 @@ async function createSessionForTabAndURL(tabId: number, url: string) {
     session = createSession();
     session.name = currentTitle;
     sessions.push(session);
-    tabSessionId[tabId] = session.id;
+    tabSessionId.set(tabId, session.id);
   } else {
     session = findSessionById(sessions, existingSessionForTab);
   }
@@ -129,7 +129,7 @@ browser.webNavigation.onDOMContentLoaded.addListener(onDomLoaded, filter);
 browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   // If the user opens in a new tab, sourceTabId maintains the session.
   if (details.sourceTabId != -1) {
-    tabSessionId[details.tabId] = tabSessionId[details.sourceTabId];
+    tabSessionId.set(details.tabId, tabSessionId.get(details.sourceTabId));
     const sourceTab = await browser.tabs.get(details.sourceTabId);
     console.log(
       `Opening in new tab`,
@@ -143,6 +143,19 @@ browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
     sourceUrls[details.tabId] = details.url;
   }
 }, filter);
+
+function notifyTabStatusChanged(tabId: number) {
+  browser.runtime.sendMessage({
+    type: MessageType.TAB_CHANGED,
+    payload: {
+      activeSession: tabsWithActiveRecording.includes(tabId),
+    },
+  });
+}
+
+browser.tabs.onActivated.addListener((details) => {
+  notifyTabStatusChanged(details.tabId);
+});
 
 browser.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const currentTab = await browser.tabs.query({
@@ -213,16 +226,52 @@ browser.runtime.onMessage.addListener(
           (link) => link.session !== message.payload
         );
         browser.storage.local.set({ sessions, links });
-        return true;
+        sendResponse(true);
       });
+      return true;
     } else if (message.type === MessageType.START_RECORDING) {
       browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
         if (tabs.length) {
           const firstTab = tabs[0];
           tabsWithActiveRecording.push(firstTab.id);
           createSessionForTabAndURL(firstTab.id, firstTab.url);
+          notifyTabStatusChanged(firstTab.id);
+          sendResponse(true);
         } else {
           console.warn("No active tabs found when trying to start recording");
+          sendResponse(false);
+        }
+      });
+      return true;
+    } else if (message.type === MessageType.STOP_RECORDING) {
+      browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+        if (tabs.length) {
+          const firstTab = tabs[0];
+          // To Stop recording of a session,
+          // we first get the active tabs for the session
+          const targetSessionId = tabSessionId.get(firstTab.id);
+          // remove all tabs recording the same session
+          for (let entry of tabSessionId.entries()) {
+            const [tabId, sessionId] = entry;
+            console.log(
+              "Checking sessionId",
+              sessionId,
+              "against target",
+              targetSessionId,
+              sessionId === targetSessionId
+            );
+            if (sessionId === targetSessionId) {
+              const activeTabIndex = tabsWithActiveRecording.indexOf(tabId);
+              console.log("Active tab idx", activeTabIndex);
+              tabsWithActiveRecording.splice(activeTabIndex, 1);
+              tabSessionId.delete(tabId);
+              notifyTabStatusChanged(tabId);
+            }
+          }
+          sendResponse(true);
+        } else {
+          console.warn("No active tabs found when trying to stop recording");
+          sendResponse(false);
         }
       });
       return true;
