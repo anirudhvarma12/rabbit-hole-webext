@@ -1,16 +1,18 @@
 import "bootstrap/js/dist/carousel";
+import "bootstrap/js/dist/tab";
+import * as $ from "jquery";
 import { Properties } from "vis";
 import { Data, Edge, Network, Node } from "vis-network";
 import { Message, MessageType } from "./messages";
 import { Session, Store } from "./models";
 import { NotesEditor } from "./notes-editor";
+import { SessionDetailView } from "./components/session-detail-view";
 
 const setup = () => {
   const message: Message = {
     type: MessageType.GET_SESSIONS,
   };
   browser.runtime.sendMessage(message).then((sessions) => {
-    console.log("Session", sessions);
     _setupSessionSelect(sessions);
   });
 };
@@ -32,7 +34,9 @@ const _setupSessionSelect = (sessions: Session[] = []) => {
 
 export const handleSubmit = () => {
   document.querySelector("#main").classList.remove("is-unselected");
-  const selectedValue = (document.querySelector("#session_select") as HTMLSelectElement).value;
+  const selectedValue = (
+    document.querySelector("#session_select") as HTMLSelectElement
+  ).value;
   draw(selectedValue);
 };
 
@@ -42,44 +46,47 @@ const draw = (selectedSession: string) => {
       type: MessageType.GET_LINKS_AND_PAGES,
       payload: selectedSession,
     };
-    browser.runtime.sendMessage(message).then((state: Pick<Store, "pages" | "links">) => {
-      const nodes: Node[] = state.pages.map((p, index, items) => {
-        return {
-          id: p.url,
-          label: p.title,
-          shape: "box",
-          color: {
-            background: index == 0 ? "#58B19F" : "#1B9CFC",
+    const listViewContainer = document.querySelector("#listView");
+    browser.runtime
+      .sendMessage(message)
+      .then((state: Pick<Store, "pages" | "links">) => {
+        const nodes: Node[] = state.pages.map((p, index, items) => {
+          return {
+            id: p.url,
+            label: p.title,
+            shape: "box",
+            color: {
+              background: index == 0 ? "#58B19F" : "#1B9CFC",
+            },
+          };
+        });
+        const edges: Edge[] = state.links.map((link) => {
+          return {
+            from: link.source_url,
+            to: link.target_url,
+            label: link.label,
+            arrows: "to",
+            length: 80,
+            id: link.id ?? link.timestamp,
+            physics: false,
+          };
+        });
+
+        const container = document.getElementById("explorer");
+        SessionDetailView.render(state.pages, listViewContainer);
+        const data: Data = {
+          nodes,
+          edges,
+        };
+        const network = new Network(container, data, {
+          interaction: {
+            navigationButtons: true,
           },
-        };
+        });
+        network.on("click", (clickData: any) => {
+          handleClick(clickData, edges, nodes);
+        });
       });
-
-      const edges: Edge[] = state.links.map((link) => {
-        return {
-          from: link.source_url,
-          to: link.target_url,
-          label: link.label,
-          arrows: "to",
-          length: 80,
-          id: link.id ?? link.timestamp,
-          physics: false,
-        };
-      });
-
-      const container = document.getElementById("explorer");
-      const data: Data = {
-        nodes,
-        edges,
-      };
-      const network = new Network(container, data, {
-        interaction: {
-          navigationButtons: true,
-        },
-      });
-      network.on("click", (clickData: any) => {
-        handleClick(clickData, edges, nodes);
-      });
-    });
   }
 };
 
@@ -101,7 +108,9 @@ const handleClick = (clickData: Properties, edges: Edge[], nodes: Node[]) => {
       } else {
         const editor = new NotesEditor();
         editor.onSave = () => {
-          const selectedValue = (document.querySelector("#session_select") as HTMLSelectElement).value;
+          const selectedValue = (
+            document.querySelector("#session_select") as HTMLSelectElement
+          ).value;
           draw(selectedValue);
         };
         editor.open(link);
@@ -111,6 +120,25 @@ const handleClick = (clickData: Properties, edges: Edge[], nodes: Node[]) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const params = window.location.search;
+  if (params && params.length) {
+    const queryParams = new URLSearchParams(params.replace("?", ""));
+    if (queryParams.has("sessionId")) {
+      const sessionId = queryParams.get("sessionId");
+      console.log("trying to draw", sessionId);
+      setTimeout(() => {
+        (document.querySelector("#session_select") as HTMLSelectElement).value =
+          sessionId;
+        handleSubmit();
+      }, 100);
+    }
+  }
+
+  $("#tabs a").on("click", function (event) {
+    event.preventDefault();
+    ($(this) as any).tab("show");
+  });
+
   await setup();
 });
 

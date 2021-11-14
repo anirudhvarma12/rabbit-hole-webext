@@ -115,5 +115,6 @@ dist/js
 .pnp.*
 dist/viewer.html
 dist/viewer.css
+dist/*.html
 dist/assets
 .DS_Store
