@@ -24,9 +24,10 @@ export const PAGE_LIST = "pages";
 export const LINK_LIST = "links";
 export const SESSION_LIST = "sessions";
 
+const tabsWithActiveRecording: number[] = [];
 // Map to store session id against a tab id.
 const tabSessionId: Record<number, number> = {};
-// Map to strore the previous url that the user is navigating from against a tab id.
+// Map to store the previous url that the user is navigating from against a tab id.
 const sourceUrls: Record<number, string> = {};
 // Maps the transition type against a tab id.
 const transitionTypes: Record<number, string> = {};
@@ -57,42 +58,53 @@ const isUserGoingForwardOrBack = (tabId: number): boolean => {
 };
 
 async function onDomLoaded(details: NavigationDetail) {
-  if (isUserGoingForwardOrBack(details.tabId)) {
+  console.log(
+    "DOM Active Recording",
+    details.tabId,
+    tabsWithActiveRecording.includes(details.tabId)
+  );
+  if (
+    isUserGoingForwardOrBack(details.tabId) ||
+    !tabsWithActiveRecording.includes(details.tabId)
+  ) {
     return;
   }
-  const currentTab = await browser.tabs.get(details.tabId);
+  await createSessionForTabAndURL(details.tabId, details.url);
+}
+
+async function createSessionForTabAndURL(tabId: number, url: string) {
+  const currentTab = await browser.tabs.get(tabId);
   const currentTitle = currentTab.title;
   const store = await getStore();
   const sessions = store.sessions || [];
   const links = store.links || [];
   const pages = store.pages || [];
-  const existingSessionForTab = tabSessionId[details.tabId];
+  const existingSessionForTab = tabSessionId[tabId];
   let session;
   if (
     !existingSessionForTab ||
-    (transitionTypes[details.tabId] != "reload" &&
-      transitionTypes[details.tabId] != "link")
+    (transitionTypes[tabId] != "reload" && transitionTypes[tabId] != "link")
   ) {
     session = createSession();
     session.name = currentTitle;
     sessions.push(session);
-    tabSessionId[details.tabId] = session.id;
+    tabSessionId[tabId] = session.id;
   } else {
     session = findSessionById(sessions, existingSessionForTab);
   }
-  const pageInfo = findOrCreatePage(details.url, currentTitle, pages);
+  const pageInfo = findOrCreatePage(url, currentTitle, pages);
   if (pageInfo.added) {
     pages.push(pageInfo.page);
   }
-  console.log("Source URL", sourceUrls[details.tabId], "target", details.url);
+  console.log("Source URL", sourceUrls[tabId], "target", url);
   const link: Link = {
     session: session.id,
-    source_url: sourceUrls[details.tabId],
-    target_url: details.url,
+    source_url: sourceUrls[tabId],
+    target_url: url,
     timestamp: Date.now(),
     id: uuidv4(),
   };
-  sourceUrls[details.tabId] = details.url;
+  sourceUrls[tabId] = url;
   links.push(link);
   browser.storage.local.set({ sessions, pages, links });
 }
@@ -119,6 +131,13 @@ browser.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   if (details.sourceTabId != -1) {
     tabSessionId[details.tabId] = tabSessionId[details.sourceTabId];
     const sourceTab = await browser.tabs.get(details.sourceTabId);
+    console.log(
+      `Opening in new tab`,
+      details.tabId,
+      "from source tab",
+      details.sourceTabId
+    );
+    tabsWithActiveRecording.push(details.tabId);
     sourceUrls[details.tabId] = sourceTab.url;
   } else {
     sourceUrls[details.tabId] = details.url;
@@ -196,6 +215,17 @@ browser.runtime.onMessage.addListener(
         browser.storage.local.set({ sessions, links });
         return true;
       });
+    } else if (message.type === MessageType.START_RECORDING) {
+      browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+        if (tabs.length) {
+          const firstTab = tabs[0];
+          tabsWithActiveRecording.push(firstTab.id);
+          createSessionForTabAndURL(firstTab.id, firstTab.url);
+        } else {
+          console.warn("No active tabs found when trying to start recording");
+        }
+      });
+      return true;
     }
   }
 );

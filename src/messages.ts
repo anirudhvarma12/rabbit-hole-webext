@@ -9,4 +9,5 @@ export enum MessageType {
   GET_LINK,
   SAVE_LINK,
   DELETE_SESSION,
+  START_RECORDING,
 }

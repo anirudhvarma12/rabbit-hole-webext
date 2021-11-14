@@ -42,6 +42,16 @@ function getSessionList(sessions: Session[] = []): HTMLElement[] {
   });
 }
 
+function setupButtons() {
+  document
+    .querySelector("#btnStartRecording")
+    .addEventListener("click", async () => {
+      await browser.runtime.sendMessage({
+        type: MessageType.START_RECORDING,
+      });
+    });
+}
+
 async function main() {
   const sessions = await getSessions();
   const elements = getSessionList(sessions);
@@ -49,6 +59,7 @@ async function main() {
   elements.forEach((element) => {
     container.appendChild(element);
   });
+  setupButtons();
 }
 
 main().then();
