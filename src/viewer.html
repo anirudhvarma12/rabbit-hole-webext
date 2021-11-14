@@ -29,10 +29,33 @@
               placeholder="Select Session"
               class="form-control mr-2"
             ></select>
-            <button class="btn btn-primary" id="submit_btn">Explore!</button>
+            <button class="btn btn-primary" id="submit_btn">View</button>
           </div>
         </div>
-        <div id="explorer" style="width: 100%"></div>
+        <ul class="nav nav-tabs" id="tabs">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              data-bs-toggle="tab"
+              href="#graph-view-tab"
+              >Graph</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#list-view-tab"
+              >List</a
+            >
+          </li>
+        </ul>
+        <div class="tab-content" id="tab-content">
+          <div class="tab-pane active" id="graph-view-tab">
+            <div id="explorer" style="width: 100%"></div>
+          </div>
+          <div class="tab-pane" id="list-view-tab">
+            <div id="listView"></div>
+          </div>
+        </div>
+
         <div id="placeholder" class="text-center">
           <img src="./assets/icon.svg" style="height: 150px" />
           <h1>Start Exploring</h1>

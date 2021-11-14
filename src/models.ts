@@ -16,6 +16,7 @@ export interface Session {
 export interface Page {
   title: string;
   url: string;
+  notes?: string[];
 }
 
 export interface Link {

@@ -12,4 +12,5 @@ export enum MessageType {
   START_RECORDING,
   STOP_RECORDING,
   TAB_CHANGED,
+  SAVE_PAGE_NOTE,
 }

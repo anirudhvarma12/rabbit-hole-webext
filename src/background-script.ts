@@ -275,6 +275,19 @@ browser.runtime.onMessage.addListener(
         }
       });
       return true;
+    } else if (message.type === MessageType.SAVE_PAGE_NOTE) {
+      getStore().then((store) => {
+        const { note, url } = message.payload;
+        const pages = store.pages;
+        const page = store.pages.find((p) => p.url === url);
+        if (page) {
+          page.notes = [note];
+          browser.storage.local.set({ pages });
+          sendResponse(true);
+        }
+        sendResponse(false);
+      });
+      return true;
     }
   }
 );

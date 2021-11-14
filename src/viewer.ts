@@ -1,9 +1,12 @@
 import "bootstrap/js/dist/carousel";
+import "bootstrap/js/dist/tab";
+import * as $ from "jquery";
 import { Properties } from "vis";
 import { Data, Edge, Network, Node } from "vis-network";
 import { Message, MessageType } from "./messages";
 import { Session, Store } from "./models";
 import { NotesEditor } from "./notes-editor";
+import { SessionDetailView } from "./components/session-detail-view";
 
 const setup = () => {
   const message: Message = {
@@ -43,6 +46,7 @@ const draw = (selectedSession: string) => {
       type: MessageType.GET_LINKS_AND_PAGES,
       payload: selectedSession,
     };
+    const listViewContainer = document.querySelector("#listView");
     browser.runtime
       .sendMessage(message)
       .then((state: Pick<Store, "pages" | "links">) => {
@@ -69,6 +73,7 @@ const draw = (selectedSession: string) => {
         });
 
         const container = document.getElementById("explorer");
+        SessionDetailView.render(state.pages, listViewContainer);
         const data: Data = {
           nodes,
           edges,
@@ -128,6 +133,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       }, 100);
     }
   }
+
+  $("#tabs a").on("click", function (event) {
+    event.preventDefault();
+    ($(this) as any).tab("show");
+  });
+
   await setup();
 });
 
