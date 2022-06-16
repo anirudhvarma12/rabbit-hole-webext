@@ -23,6 +23,16 @@
   height: 80vh;
 }
 
+header {
+  display: flex;
+  justify-content: flex-end;
+  height: 30px;
+}
+
+#network-container {
+  height: calc(100% - 30px);
+}
+
 .carousel {
   width: 500px;
 }
