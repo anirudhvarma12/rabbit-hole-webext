@@ -16,6 +16,8 @@ const setup = () => {
   });
 };
 
+let _selectedSession: Pick<Store, "pages" | "links">;
+
 const _setupSessionSelect = (sessions: Session[] = []) => {
   const dropdown = document.querySelector("#session_select");
   if (sessions.length == 0) {
@@ -48,6 +50,7 @@ const draw = (selectedSession: string) => {
     browser.runtime
       .sendMessage(message)
       .then((state: Pick<Store, "pages" | "links">) => {
+        _selectedSession = state;
         const nodes: Node[] = state.pages.map((p, index, items) => {
           return {
             id: p.url,
@@ -130,6 +133,21 @@ function exportToImage() {
   document.body.removeChild(link);
 }
 
+function exportToJSON() {
+  const session = _selectedSession;
+  const meta = { version: 1 };
+  const exported = JSON.stringify({ meta, session });
+  var file = new Blob([exported]);
+  const url = URL.createObjectURL(file);
+  var link = document.createElement("a");
+  link.download = "export.json";
+  link.href = url;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   await setup();
 });
@@ -138,4 +156,8 @@ document.querySelector("#submit_btn").addEventListener("click", handleSubmit);
 
 document
   .querySelector("#export_image")
-  .addEventListener("click", exportToImage);
+  .addEventListener("click", () => exportToImage());
+
+document
+  .querySelector("#export_json")
+  .addEventListener("click", () => exportToJSON());
